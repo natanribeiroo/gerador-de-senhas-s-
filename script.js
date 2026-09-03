@@ -1,55 +1,81 @@
-const passwordInput = document.getElementById('password');
-const lengthInput = document.getElementById('length');
-const lengthVal = document.getElementById('length-val');
-const uppercaseEl = document.getElementById('uppercase');
-const lowercaseEl = document.getElementById('lowercase');
-const numbersEl = document.getElementById('numbers');
-const symbolsEl = document.getElementById('symbols');
-const generateBtn = document.getElementById('generate-btn');
-const copyBtn = document.getElementById('copy-btn');
+const senha = document.getElementById("senha");
+const tamanho = document.getElementById("tamanho");
+const valorTamanho = document.getElementById("valorTamanho");
 
-const UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const LOWERCASE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
-const NUMBER_CHARS = '0123456789';
-const SYMBOL_CHARS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+const maiusculas = document.getElementById("maiusculas");
+const minusculas = document.getElementById("minusculas");
+const numeros = document.getElementById("numeros");
+const simbolos = document.getElementById("simbolos");
 
-// Atualiza a exibição numérica do tamanho da senha
-lengthInput.addEventListener('input', () => {
-  lengthVal.textContent = lengthInput.value;
+const gerar = document.getElementById("gerar");
+const copiar = document.getElementById("copiar");
+const mensagem = document.getElementById("mensagem");
+
+const caracteres = {
+    maiusculas: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    minusculas: "abcdefghijklmnopqrstuvwxyz",
+    numeros: "0123456789",
+    simbolos: "!@#$%&*()-_=+[]{}"
+};
+
+tamanho.addEventListener("input", () => {
+    valorTamanho.textContent = tamanho.value;
 });
 
-function generatePassword() {
-  const length = parseInt(lengthInput.value);
-  let allowedChars = '';
-  let password = '';
+function gerarSenha() {
+    let caracteresDisponiveis = "";
 
-  if (uppercaseEl.checked) allowedChars += UPPERCASE_CHARS;
-  if (lowercaseEl.checked) allowedChars += LOWERCASE_CHARS;
-  if (numbersEl.checked) allowedChars += NUMBER_CHARS;
-  if (symbolsEl.checked) allowedChars += SYMBOL_CHARS;
+    if (maiusculas.checked) {
+        caracteresDisponiveis += caracteres.maiusculas;
+    }
 
-  if (allowedChars === '') {
-    alert('Selecione pelo menos uma opção para gerar a senha!');
-    return;
-  }
+    if (minusculas.checked) {
+        caracteresDisponiveis += caracteres.minusculas;
+    }
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * allowedChars.length);
-    password += allowedChars[randomIndex];
-  }
+    if (numeros.checked) {
+        caracteresDisponiveis += caracteres.numeros;
+    }
 
-  passwordInput.value = password;
+    if (simbolos.checked) {
+        caracteresDisponiveis += caracteres.simbolos;
+    }
+
+    if (caracteresDisponiveis.length === 0) {
+        mensagem.textContent = "Selecione pelo menos uma opção.";
+        mensagem.style.color = "#dc2626";
+        senha.value = "";
+        return;
+    }
+
+    let novaSenha = "";
+
+    for (let i = 0; i < tamanho.value; i++) {
+        const indice = Math.floor(
+            Math.random() * caracteresDisponiveis.length
+        );
+
+        novaSenha += caracteresDisponiveis[indice];
+    }
+
+    senha.value = novaSenha;
+
+    mensagem.textContent = "";
 }
 
-function copyPassword() {
-  if (!passwordInput.value) return;
+copiar.addEventListener("click", async () => {
+    if (!senha.value) {
+        mensagem.textContent = "Gere uma senha primeiro.";
+        mensagem.style.color = "#dc2626";
+        return;
+    }
 
-  navigator.clipboard.writeText(passwordInput.value);
-  alert('Senha copiada para a área de transferência!');
-}
+    await navigator.clipboard.writeText(senha.value);
 
-generateBtn.addEventListener('click', generatePassword);
-copyBtn.addEventListener('click', copyPassword);
+    mensagem.textContent = "Senha copiada!";
+    mensagem.style.color = "#16a34a";
+});
 
-// Gera uma senha inicial ao carregar a página
-generatePassword();
+gerar.addEventListener("click", gerarSenha);
+
+gerarSenha();
